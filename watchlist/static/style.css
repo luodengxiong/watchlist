@@ -1,6 +1,6 @@
 body {
     margin: auto;
-    max-width: 580px;
+    max-width: 1000px;
     font-size: 14px;
     font-family: Helvetica, Arial, sans-serif;
 }
@@ -14,7 +14,7 @@ nav ul {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #333;
+    background-color: #999;
 }
 
 nav li {
@@ -30,7 +30,7 @@ nav li a {
 }
 
 nav li a:hover {
-    background-color: #111;
+    background-color: #999;
 }
 
 .alert {

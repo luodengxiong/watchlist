@@ -3,7 +3,8 @@ from flask_login import login_user, login_required, logout_user, current_user
 
 from watchlist import app, db
 from watchlist.forms import HelloForm
-from watchlist.models import User, Movie,Message
+from watchlist.util import Util
+from watchlist.models import User, Movie,Message,Stock,Stockvo
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -125,3 +126,53 @@ def sayhello():
 
     messages = Message.query.order_by(Message.timestamp.desc()).all()
     return render_template('sayhello.html', form=form, messages=messages)
+
+@app.route('/stocks',methods=['get'])
+@login_required
+def stocks():
+    stockvos = []
+    stocks = Stock.query.order_by(Stock.timestamp.desc()).all()
+    for m in stocks:
+        itemcode= m.code
+        itemppercent= Util.stock_data(itemcode)
+
+        stockvo = Stockvo(id=m.id,name=m.name, code=m.code,uptimes=m.uptimes,percent=itemppercent)
+    #stockvo = Stockvo(id=1,name='name', code='code',uptimes=1,percent='5%')
+
+        stockvos.append(stockvo)
+
+    return render_template('stocks.html',stockvos=stockvos)
+
+
+
+
+@app.route('/stocks/edit/<int:stock_id>', methods=['GET', 'POST'])
+@login_required
+def stock_edit(stock_id):
+    stock = Stock.query.get_or_404(stock_id)
+
+    if request.method == 'POST':
+        name = request.form['name']
+        code = request.form['code']
+
+        if not name or not code or len(code) != 6 or len(name) > 60:
+            flash('Invalid input.')
+            return redirect(url_for('stock_edit', stock_id=stock_id))
+
+        stock.name = name
+        stock.code = code
+        db.session.commit()
+        flash('Item updated.')
+        return redirect(url_for('stocks'))
+
+    return render_template('stock-edit.html', stock=stock)
+
+
+@app.route('/stocks/delete/<int:stock_id>', methods=['POST'])
+@login_required
+def stock_delete(stock_id):
+    stock = Stock.query.get_or_404(stock_id)
+    db.session.delete(stock)
+    db.session.commit()
+    flash('Item deleted.')
+    return redirect(url_for('stocks'))

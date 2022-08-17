@@ -1,7 +1,7 @@
 import click
 
 from watchlist import app, db
-from watchlist.models import User, Movie
+from watchlist.models import User, Movie, Stock
 
 
 @app.cli.command()
@@ -60,6 +60,23 @@ def admin(username, password):
         user = User(username=username, name='Admin')
         user.set_password(password)
         db.session.add(user)
+
+    db.session.commit()
+    click.echo('Done.')
+
+
+@app.cli.command()
+def initstock():
+    """Create Table Stock."""
+    db.create_all()
+    """Mock Data."""
+    stocks = [
+        {'name': '宝馨科技', 'code': '002514', 'uptimes':0},
+
+    ]
+    for m in stocks:
+        stockItem = Stock(name=m['name'], code=m['code'],uptimes=m['uptimes'])
+        db.session.add(stockItem)
 
     db.session.commit()
     click.echo('Done.')

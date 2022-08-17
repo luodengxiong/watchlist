@@ -28,3 +28,19 @@ class Message(db.Model):
     name = db.Column(db.String(20))
     body = db.Column(db.String(200))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+class Stock(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(10))
+    code = db.Column(db.String(10))
+    uptimes=db.Column(db.Integer)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+class Stockvo():
+    def __init__(self,id,name ,code,uptimes,percent):
+        self.id = id
+        self.name = name
+        self.code = code
+        self.uptimes = uptimes
+        #self.timestamp = timestamp
+        self.percent = percent

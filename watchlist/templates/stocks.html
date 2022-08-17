@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<ul class="movie-list">
+    {% for stock in stockvos %}
+    <li class="clearfix">
+        <span class="float-left">
+
+        {{ stock.code }} - {{ stock.name }} - {{ stock.percent }}
+        </span>
+        <span class="float-right">
+            {% if current_user.is_authenticated %}
+            <a class="btn" href="{{ url_for('stock_edit', stock_id=stock.id) }}">Edit</a>
+            <form class="inline-form" method="post" action="{{ url_for('stock_delete', stock_id=stock.id) }}">
+                <input class="btn" type="submit" name="delete" value="Delete" onclick="return confirm('Are you sure?')">
+            </form>
+            {% endif %}
+
+        </span>
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
