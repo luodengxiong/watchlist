@@ -35,3 +35,13 @@ werkzeug==2.1.2
     #   flask-login
 zipp==3.8.1
     # via importlib-metadata
+
+bootstrap-flask==2.0.2
+flask-wtf==1.0.1
+wtforms==3.0.1
+flask-moment==1.0.4
+
+    # 由于 demjson 2.2.4 兼容python2和python3，当安装环境为python3时，有一部分代码需要转换
+    # Setuptools从版本58.0.0开始不再支持2to3的builds，所以导致 demjson 2.2.4安装后不再可用，
+    # 降级setuptools版本即可解决 pip install --upgrade setuptools==57.5.0
+    #然後再次 pip install demjson==2.2.4

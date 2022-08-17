@@ -4,6 +4,8 @@ import sys
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_bootstrap import Bootstrap, Bootstrap4
+from flask_moment import Moment
 
 # SQLite URI compatible
 WIN = sys.platform.startswith('win')
@@ -19,6 +21,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
+bootstrap = Bootstrap4(app)
+moment = Moment(app)
+
 
 
 @login_manager.user_loader

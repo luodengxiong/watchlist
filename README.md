@@ -16,7 +16,7 @@ $ cd watchlist
 ```
 create & active virtual enviroment then install dependencies:
 ```
-$ python3 -m venv env  # use `python ...` on Windows
+$ python3 -m venv env  # use `python ...` on Windows  python -m venv env
 $ source env/bin/activate  # use `env\Scripts\activate` on Windows
 (env) $ pip install -r requirements.txt
 ```
