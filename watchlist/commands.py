@@ -1,7 +1,15 @@
+import datetime
+
 import click
+import json
+import demjson
+
+from sqlalchemy import func
 
 from watchlist import app, db
-from watchlist.models import User, Movie, Stock
+from watchlist.models import User, Movie, Stock,Config
+from watchlist.zhangtingmodel import Zhangting
+from watchlist.util import Util
 
 
 @app.cli.command()
@@ -64,6 +72,33 @@ def admin(username, password):
     db.session.commit()
     click.echo('Done.')
 
+@app.cli.command()
+@click.option('--name', prompt=True, help='The name of config.')
+@click.option('--value', prompt=True, help='The value of config.')
+def addconfig(name, value):
+    """Create Table."""
+    db.create_all()
+
+    config = Config.query.filter(Config.name==name).first()
+    if config is not None:
+        click.echo('Updating config...')
+        config.name = name
+        config.value = value
+    else:
+        click.echo('Creating config...')
+        config = Config(name=name, value=value)
+        config.name = name
+        config.value = value
+        db.session.add(config)
+
+    db.session.commit()
+    click.echo('Done.')
+@app.cli.command()
+def getconfig():
+    config = Config.query.filter(Config.name == 'license').first()
+
+    click.echo('Done.==' +config.value)
+
 
 @app.cli.command()
 def initstock():
@@ -72,6 +107,7 @@ def initstock():
     """Mock Data."""
     stocks = [
         {'name': '宝馨科技', 'code': '002514', 'uptimes':0},
+        {'name': '传艺科技', 'code': '002866', 'uptimes':0},
 
     ]
     for m in stocks:
@@ -80,3 +116,49 @@ def initstock():
 
     db.session.commit()
     click.echo('Done.')
+
+#T增加涨停数据初始化的命令，调用工具类
+@app.cli.command()
+def zhangting():
+    date_now = datetime.datetime.now()
+    date_str=str(date_now.strftime("%Y-%m-%d"))
+    result=Util.zhangting_data(date_str);
+    #click.echo(result)
+    #stocks = Zhangting.query.order_by(Zhangting.zj.desc()).all()
+    click.echo('Done.' +result)
+
+@app.cli.command()
+def datest():
+    #查询连板数量，按最高到低分组展现连板股次日竞价的表现
+    lbsl=db.session.query(Zhangting.lbc).group_by(Zhangting.lbc).order_by(Zhangting.lbc.desc()).all()
+    #print(lbsl)
+    for m in lbsl:
+        print(int(m[0]))
+    click.echo('Done.' )
+
+@app.cli.command()
+def d2():
+    #查询连板数量，按最高到低分组展现连板股次日竞价的表现
+    lbsl=getlbcstocks(3)
+    #print(lbsl)
+    for m in lbsl:
+        item=Util.to_dict(m)
+        print(item)
+    click.echo('Done.')
+
+
+
+
+
+@app.cli.command()
+def datetimetest():
+    date_str = datetime.datetime.now()
+    #获取昨天
+    date_str_yesday=datetime.date.today()-datetime.timedelta(days=1)
+    click.echo('Done.'+ str(date_str_yesday.strftime("%Y-%m-%d")))
+
+
+def getlbcstocks(lbc):
+    lbsl = Zhangting.query.filter(Zhangting.lbc == lbc).order_by(Zhangting.zj.desc()).all()
+
+    return lbsl

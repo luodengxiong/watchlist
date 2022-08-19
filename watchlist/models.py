@@ -18,6 +18,12 @@ class User(db.Model, UserMixin):
         return check_password_hash(self.password_hash, password)
 
 
+class Config(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))
+    value = db.Column(db.String(200))
+    timestamp = db.Column(db.DateTime, default=datetime.now(), index=True)
+
 class Movie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(60))
@@ -27,20 +33,23 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))
     body = db.Column(db.String(200))
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    timestamp = db.Column(db.DateTime, default=datetime.now(), index=True)
 
 class Stock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10))
     code = db.Column(db.String(10))
     uptimes=db.Column(db.Integer)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    timestamp = db.Column(db.DateTime, default=datetime.now(), index=True)
 
 class Stockvo():
-    def __init__(self,id,name ,code,uptimes,percent):
+    def __init__(self,id,name ,code,uptimes,percent,lbc,zj,hs):
         self.id = id
         self.name = name
         self.code = code
         self.uptimes = uptimes
         #self.timestamp = timestamp
         self.percent = percent
+        self.lbc = lbc
+        self.zj = zj
+        self.hs = hs

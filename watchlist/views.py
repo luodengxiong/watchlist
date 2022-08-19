@@ -5,7 +5,7 @@ from watchlist import app, db
 from watchlist.forms import HelloForm
 from watchlist.util import Util
 from watchlist.models import User, Movie,Message,Stock,Stockvo
-
+from watchlist.zhangtingmodel import Zhangting
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -136,12 +136,40 @@ def stocks():
         itemcode= m.code
         itemppercent= Util.stock_data(itemcode)
 
-        stockvo = Stockvo(id=m.id,name=m.name, code=m.code,uptimes=m.uptimes,percent=itemppercent)
+        stockvo = Stockvo(id=m.id,name=m.name, code=m.code,uptimes=m.uptimes,percent=itemppercent,
+                          lbc=0,
+                          hs=0,
+                          zj=0
+                          )
     #stockvo = Stockvo(id=1,name='name', code='code',uptimes=1,percent='5%')
 
         stockvos.append(stockvo)
 
     return render_template('stocks.html',stockvos=stockvos)
+
+@app.route('/zhangting',methods=['get'])
+@login_required
+def zhangting():
+    # zhangtings= Zhangting.query.order_by(Zhangting.lbc.desc()).all()
+    zhangtings= Zhangting.query.filter(Zhangting.lbc >1).order_by(Zhangting.lbc.desc(),Zhangting.zj.desc()).all()
+    stockvos=[]
+    for m in zhangtings:
+        #print(Util.to_dict(m))
+        itemcode = m.dm[2:8]
+        # print(itemcode + '---' +m.dm)
+        itemppercent = Util.stock_data(itemcode)
+
+        stockvo = Stockvo(id=m.id, name=m.mc,
+                          code=m.dm,
+                          uptimes=m.lbc,
+                          percent=itemppercent,
+                          lbc = m.lbc,
+                          hs = m.hs,
+                          zj = '%.2f' % (int(m.zj) / 100000000) + '亿'
+                          )
+        stockvos.append(stockvo)
+    return render_template('zhangting.html',stockvos=stockvos)
+
 
 
 
